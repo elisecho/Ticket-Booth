@@ -1,9 +1,8 @@
 import ch04.queues.ArrayBoundedQueue;
 import ch04.queues.QueueUnderflowException;
-
 import java.util.*;
 
-public class TixQueue extends ArrayBoundedQueue<TixOrder> implements Runnable {
+public class TixQueue extends ArrayBoundedQueue<TixOrder> implements Runnable{
 
     // Fields
     private int totTix;
@@ -15,17 +14,25 @@ public class TixQueue extends ArrayBoundedQueue<TixOrder> implements Runnable {
         this.pause = pause;
     }
 
-    // Method to get Total Ticket Count
-    public int getTotTix() {
-        return totTix;
+    @Override
+    public void run() {
+        System.out.println("Run Method - Thread: " + Thread.currentThread().getName());
+        while (true) {
+            System.out.println(dequeueOrder());
+        }
     }
 
-    public void removeTix(int count) {
-        totTix = totTix - count;
-    }
-
+    // Method to remove orders from the que
     public String dequeueOrder() {
-        while (totTix > 0) {
+        try {
+            Thread.sleep(pause);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        if (isEmpty()){
+            return "No Orders in the queue";
+        } else {
+            System.out.println("DQ Oder - Thread: " + Thread.currentThread().getName());
             String status = "";
 
             // Dequeue the first item in the queue save it variable currOrder
@@ -34,8 +41,7 @@ public class TixQueue extends ArrayBoundedQueue<TixOrder> implements Runnable {
             // If the order is requesting more tickets than available Status = FALSE
             if (totTix < currOrder.getTixCount()) {
                 status = "Not enough tickets were available to complete this order.";
-            }
-            else {
+            } else {
                 status = "Order was successful!!";
                 removeTix(currOrder.getTixCount());
             }
@@ -49,43 +55,29 @@ public class TixQueue extends ArrayBoundedQueue<TixOrder> implements Runnable {
                     "\nTickets Available: " + totTix +
                     "\n*************************************************";
         }
-        return null; // the program wont let me add the original retrun statement??
     }
 
-//    @Override
-//    public T dequeue()
-//    // Throws QueueUnderflowException if this queue is empty;
-//    // otherwise, removes front element from this queue and returns it.
-//    {
-//        if (isEmpty())
-//            throw new QueueUnderflowException("Dequeue attempted on empty queue.");
-//        else
-//        {
-//            T toReturn = elements[front];
-//            elements[front] = null;
-//            front = (front + 1) % elements.length;
-//            numElements = numElements - 1;
-//            return toReturn;
-//        }
-//    }
+    // Method to reduce the number of tickets
+    public void removeTix(int count) {
+        totTix = totTix - count;
+    }
 
+
+    // GETTERS
+    // Method to retrieve the date and time
     public String getTimeStamp() {
         Date now = new Date();
         return now.toString();
     }
 
+    // Method to create an order number
     public int getOrderNumber() {
         String s = getTimeStamp();
         return Math.abs(s.hashCode());
     }
 
-    @Override
-    public void run() {
-        try {
-            dequeueOrder();
-            Thread.sleep(pause);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+    // Method to get the current total number of tickets
+    public int getTotTix() {
+        return totTix;
     }
 }

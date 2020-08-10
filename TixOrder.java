@@ -3,25 +3,34 @@ import javax.swing.JOptionPane;
 public class TixOrder {
     private String name;
     private int tixCount;
-    public void order(){
-        String input = JOptionPane.showInputDialog("Enter a name and a quantity separated by a colon. \nExample: Gabbie:3 \nEnter STOP to end the program.");
-        if(input.equalsIgnoreCase("end")){
-            System.out.println("Exiting the program.");
-            System.exit(0);
+
+    public TixOrder() {
+        boolean reAsk = true;
+
+        while (reAsk) {
+            String input = JOptionPane.showInputDialog("Enter a name and a quantity separated by a colon." +
+                    "\nExample: Gabbie:3" +
+                    "\nEnter STOP to end the program.");
+
+            if (input.equalsIgnoreCase("STOP")) {
+                System.out.println("Exiting the program.");
+                System.exit(1);
+            } else if (!input.contains(":")) {
+                System.out.println("Invalid entry");
+                reAsk = true;
+            } else {
+                String[] array = input.split(":");
+                name = array[0];
+                tixCount = Integer.parseInt(array[1]);
+                reAsk = false;
+            }
         }
-
-        String[] array = input.split(":");
-
-        String name = array[0];
-        int tixCount = Integer.parseInt(array[1]);
-
-        System.out.println(name + " " + tixCount);
     }
 
-    public TixOrder (String name, int tixCount){
-        this.name = name;
-        this.tixCount = tixCount;
-    }
+//    public TixOrder (String name, int tixCount){
+//        this.name = name;
+//        this.tixCount = tixCount;
+//    }
 
     public String getName() {
         return name;
@@ -30,4 +39,5 @@ public class TixOrder {
     public int getTixCount() {
         return tixCount;
     }
+
 }
